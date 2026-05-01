@@ -9,11 +9,11 @@ public class Flight {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String brand;  // Légitársaság
-    private String name;   // Járatszám
-    private String color;  // Státusz
-    private String season; // Kapu
-    private String type;   // Repülő típusa (ez lett a price helyett)
+    private String brand;
+    private String name;
+    private String color;
+    private String season;
+    private String type;
 
     public Flight() {}
 
