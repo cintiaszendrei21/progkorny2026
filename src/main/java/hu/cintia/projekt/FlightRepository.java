@@ -1,10 +1,9 @@
 package hu.cintia.projekt;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import java.util.List; // Ez az import nagyon fontos!
+import java.util.List;
 
 public interface FlightRepository extends JpaRepository<Flight, Long> {
-
-    // Ezt a sort kell hozzáadnod:
-    List<Flight> findByAirline(String airline);
+    // A Spring ebből tudja, hogy a Flight -> Airline -> name mezőben kell keresnie
+    List<Flight> findByAirlineName(String name);
 }

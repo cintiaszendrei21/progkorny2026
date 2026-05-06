@@ -13,12 +13,13 @@ public class FlightCatalogApplication {
     }
 
     @Bean
-    CommandLineRunner initDatabase(FlightRepository repository) {
+    CommandLineRunner initDatabase(FlightRepository repository, AirlineRepository airlineRepository)  {
         return args -> {
-            // Most már minden paraméter String az id után!
-            repository.save(new Flight(null, "WizzAir", "W62341", "Airbus A320", "On Time", "A12"));
 
-            System.out.println("Járat mentve)!");
+            // Hozzárendeljük a járatot
+
+
+            System.out.println("Siker! Az adatok az adatbázisban vannak.");
         };
     }
 }

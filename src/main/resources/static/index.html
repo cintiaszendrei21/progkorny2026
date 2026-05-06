@@ -6,7 +6,7 @@
     <style>
         body { font-family: 'Segoe UI', sans-serif; background-color: #f0f4f8; margin: 40px; }
         .container { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 20px; }
-        input, select { padding: 10px; margin: 5px; border: 1px solid #ddd; border-radius: 4px; }
+        input { padding: 10px; margin: 5px; border: 1px solid #ddd; border-radius: 4px; width: 180px; }
         button { padding: 10px 20px; background-color: #0056b3; color: white; border: none; cursor: pointer; border-radius: 4px; font-weight: bold; }
         button:hover { background-color: #004494; }
         table { width: 100%; border-collapse: collapse; margin-top: 20px; }
@@ -18,12 +18,12 @@
 <body>
 
 <div class="container">
-    <h2>Új repülőjárat rögzítése</h2>
-    <input type="text" id="brand" placeholder="Légitársaság">
-    <input type="text" id="number" placeholder="Járatszám">
+    <h2>Új repülőjárat hozzáadása</h2>
+    <input type="text" id="airlineName" placeholder="Légitársaság">
+    <input type="text" id="flightNumber" placeholder="Járatszám">
     <input type="text" id="type" placeholder="Típusa">
     <input type="text" id="status" placeholder="Státusz">
-    <input type="text" id="gates" placeholder="Kapu">
+    <input type="text" id="gate" placeholder="Kapu">
 
     <button onclick="addFlight()">Járat mentése</button>
 </div>
@@ -38,7 +38,6 @@
             <th>Típus</th>
             <th>Státusz</th>
             <th>Kapu</th>
-
         </tr>
         </thead>
         <tbody></tbody>
@@ -46,9 +45,8 @@
 </div>
 
 <script>
-
+    // Járatok betöltése a szerverről
     function loadFlights() {
-
         fetch('/api/flights')
             .then(res => res.json())
             .then(data => {
@@ -57,34 +55,48 @@
                 data.forEach(item => {
                     tbody.innerHTML += `
                         <tr>
-                            <td>${item.brand}</td>
-                            <td>${item.name}</td>
-                            <td class="status-cell">${item.category}</td>
-                            <td>${item.size}</td>
+                            <td>${item.airline ? item.airline.name : 'Nincs megadva'}</td>
+                            <td>${item.flightNumber}</td>
                             <td>${item.type}</td>
+                            <td class="status-cell">${item.status}</td>
+                            <td>${item.gate}</td>
                         </tr>`;
                 });
-            });
+            })
+            .catch(err => console.error("Hiba a betöltéskor:", err));
     }
 
-
+    // Új járat mentése
     function addFlight() {
-        const item = {
-            brand: document.getElementById('brand').value,
-            name: document.getElementById('name').value,
-            category: document.getElementById('category').value,
-            size: document.getElementById('size').value,
-            type: document.getElementById('type').value
+        const flightData = {
+            flightNumber: document.getElementById('flightNumber').value,
+            type: document.getElementById('type').value,
+            status: document.getElementById('status').value,
+            gate: document.getElementById('gate').value,
+            airline: {
+                name: document.getElementById('airlineName').value
+            }
         };
 
         fetch('/api/flights', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(item)
-        }).then(() => {
-            document.querySelectorAll('input').forEach(i => i.value = '');
-            loadFlights();
-        });
+            body: JSON.stringify(flightData)
+        })
+        .then(res => {
+            if (res.ok) {
+                // Mezők ürítése
+                document.getElementById('airlineName').value = '';
+                document.getElementById('flightNumber').value = '';
+                document.getElementById('type').value = '';
+                document.getElementById('status').value = '';
+                document.getElementById('gate').value = '';
+                loadFlights(); // Táblázat frissítése
+            } else {
+                alert("Hiba történt a mentés során!");
+            }
+        })
+        .catch(err => console.error("Hiba a mentéskor:", err));
     }
 
     loadFlights();
