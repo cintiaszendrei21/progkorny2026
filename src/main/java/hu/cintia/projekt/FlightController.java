@@ -6,7 +6,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/flights")
 @CrossOrigin(origins = "*")
-
 public class FlightController {
 
     private final FlightRepository repository;
@@ -19,14 +18,14 @@ public class FlightController {
     public List<Flight> getAllFlights() {
         return repository.findAll();
     }
+
+    @PostMapping
+    public Flight addFlight(@RequestBody Flight flight) {
+        return repository.save(flight);
+    }
+
     @DeleteMapping("/{id}")
     public void deleteFlight(@PathVariable Long id) {
         repository.deleteById(id);
     }
-
-    @GetMapping("/filter/{airlineName}")
-    public List<Flight> getByAirline(@PathVariable String airlineName) {
-        return repository.findByAirlineName(airlineName);
-    }
-
 }

@@ -20,12 +20,12 @@
 <div class="container">
     <h2>Új repülőjárat hozzáadása</h2>
     <input type="text" id="airlineName" placeholder="Légitársaság">
-    <input type="text" id="flightNumber" placeholder="Járatszám">
     <input type="text" id="type" placeholder="Típusa">
+    <input type="text" id="flightNumber" placeholder="Járatszám">
     <input type="text" id="status" placeholder="Státusz">
     <input type="text" id="gate" placeholder="Kapu">
 
-    <button onclick="addFlight()">Járat mentése</button>
+    <button onclick="addFlight()">Mentés</button>
 </div>
 
 <div class="container">
@@ -34,10 +34,11 @@
         <thead>
         <tr>
             <th>Légitársaság</th>
-            <th>Járatszám</th>
             <th>Típus</th>
+            <th>Járatszám</th>
             <th>Státusz</th>
             <th>Kapu</th>
+            <th>Művelet</th> </tr>
         </tr>
         </thead>
         <tbody></tbody>
@@ -45,61 +46,62 @@
 </div>
 
 <script>
-    // Járatok betöltése a szerverről
     function loadFlights() {
-        fetch('/api/flights')
-            .then(res => res.json())
-            .then(data => {
-                const tbody = document.querySelector('#flightsTable tbody');
-                tbody.innerHTML = '';
-                data.forEach(item => {
-                    tbody.innerHTML += `
-                        <tr>
-                            <td>${item.airline ? item.airline.name : 'Nincs megadva'}</td>
-                            <td>${item.flightNumber}</td>
-                            <td>${item.type}</td>
-                            <td class="status-cell">${item.status}</td>
-                            <td>${item.gate}</td>
-                        </tr>`;
-                });
-            })
-            .catch(err => console.error("Hiba a betöltéskor:", err));
-    }
+     fetch('/api/flights')
+         .then(res => res.json())
+         .then(data => {
+             const tbody = document.querySelector('#flightsTable tbody');
+             tbody.innerHTML = '';
+             data.forEach(item => {
+                 tbody.innerHTML += `
+                     <tr>
+                         <td>${item.airline}</td>
+                         <td>${item.type}</td>
+                         <td>${item.flightNumber}</td>
+                         <td>${item.status}</td>
+                         <td>${item.gate}</td>
+                         <td>
+                             <button onclick="deleteFlight(${item.id})" style="background:#ff4d4d; color:white; border:none; padding:5px 10px; border-radius:4px; cursor:pointer;">Törlés</button>
+                         </td>
+                     </tr>`;
+             });
+         });
+ }
 
-    // Új járat mentése
-    function addFlight() {
-        const flightData = {
-            flightNumber: document.getElementById('flightNumber').value,
-            type: document.getElementById('type').value,
-            status: document.getElementById('status').value,
-            gate: document.getElementById('gate').value,
-            airline: {
-                name: document.getElementById('airlineName').value
-            }
-        };
+ function addFlight() {
+     const flightData = {
+         airline: document.getElementById('airlineName').value, // Most már csak szöveg
+         flightNumber: document.getElementById('flightNumber').value,
+         type: document.getElementById('type').value,
+         status: document.getElementById('status').value,
+         gate: document.getElementById('gate').value
+     };
 
-        fetch('/api/flights', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(flightData)
-        })
-        .then(res => {
-            if (res.ok) {
-                // Mezők ürítése
-                document.getElementById('airlineName').value = '';
-                document.getElementById('flightNumber').value = '';
-                document.getElementById('type').value = '';
-                document.getElementById('status').value = '';
-                document.getElementById('gate').value = '';
-                loadFlights(); // Táblázat frissítése
-            } else {
-                alert("Hiba történt a mentés során!");
-            }
-        })
-        .catch(err => console.error("Hiba a mentéskor:", err));
-    }
+     fetch('/api/flights', {
+         method: 'POST',
+         headers: { 'Content-Type': 'application/json' },
+         body: JSON.stringify(flightData)
+     })
+     .then(res => {
+         if (res.ok) {
+             loadFlights();
+             alert("Sikeresen mentve!");
+         } else {
+             alert("Hiba a mentésnél!");
+         }
+     });
+ }
 
-    loadFlights();
+ function deleteFlight(id) {
+     if(confirm("Biztosan törlöd?")) {
+         fetch('/api/flights/' + id, { method: 'DELETE' })
+             .then(res => {
+                 if(res.ok) loadFlights();
+             });
+     }
+ }
+
+ loadFlights();
 </script>
 </body>
 </html>

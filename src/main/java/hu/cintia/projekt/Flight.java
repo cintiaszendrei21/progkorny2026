@@ -10,12 +10,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Flight {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne // Összekötjük az Airline táblával
     @JoinColumn(name = "airline_id")
     private Airline airline;
 
@@ -24,7 +23,7 @@ public class Flight {
     private String status;
     private String gate;
 
-    // Ez a speciális konstruktor kell, mert az Application-ben ezt használod
+    // Kézi konstruktor, ha nem akarod mindig az ID-t megadni
     public Flight(Airline airline, String flightNumber, String type, String status, String gate) {
         this.airline = airline;
         this.flightNumber = flightNumber;
