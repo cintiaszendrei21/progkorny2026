@@ -14,19 +14,18 @@ public class Flight {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne // Összekötjük az Airline táblával
+    @ManyToOne
     @JoinColumn(name = "airline_id")
     private Airline airline;
-
-    private String flightNumber;
+    private String number;
     private String type;
     private String status;
     private String gate;
 
-    // Kézi konstruktor, ha nem akarod mindig az ID-t megadni
-    public Flight(Airline airline, String flightNumber, String type, String status, String gate) {
+
+    public Flight(Airline airline, String number, String type, String status, String gate) {
         this.airline = airline;
-        this.flightNumber = flightNumber;
+        this.number =number;
         this.type = type;
         this.status = status;
         this.gate = gate;

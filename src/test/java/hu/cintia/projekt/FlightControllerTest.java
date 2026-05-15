@@ -26,31 +26,37 @@ public class FlightControllerTest {
     private AirlineRepository airlineRepository;
 
     @Test
-    public void testGetAllFlights() throws Exception {
-        Airline wizz = new Airline("WizzAir");
-        Flight f1 = new Flight(wizz, "W6556", "Airbus A320", "Delayed", "5");
+    public void shouldReturnAllFlights() throws Exception {
+        Airline company = new Airline("Lufthansa");
+        Flight testflight = new Flight(company, "LH1234", "Boeing 737", "Időben", "B22");
 
-        when(flightRepository.findAll()).thenReturn(Collections.singletonList(f1));
+        when(flightRepository.findAll()).thenReturn(Collections.singletonList(testflight));
 
         mockMvc.perform(get("/api/flights"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].flightNumber").value("W6556"))
-                .andExpect(jsonPath("$[0].airline.name").value("WizzAir"));
+                .andExpect(jsonPath("$[0].number").value("LH1234"));
     }
 
     @Test
-    public void testDeleteFlight() throws Exception {
+    public void deleteExistingFlightTest() throws Exception {
         mockMvc.perform(delete("/api/flights/1"))
                 .andExpect(status().isOk());
     }
 
     @Test
-    public void testAddFlight() throws Exception {
-        String json = "{\"airlineName\":\"WizzAir\",\"flightNumber\":\"W6556\",\"type\":\"A320\",\"status\":\"OK\",\"gate\":\"1\"}";
+    public void createNewFlightTest() throws Exception {
+
+        String ujJaratJson = "{\n" +
+                "  \"Name\": \"Ryanair\",\n" +
+                "  \"Number\": \"FR4567\",\n" +
+                "  \"type\": \"737-800\",\n" +
+                "  \"status\": \"Úton\",\n" +
+                "  \"gate\": \"C10\"\n" +
+                "}";
 
         mockMvc.perform(post("/api/flights")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(json))
+                        .content(ujJaratJson))
                 .andExpect(status().isOk());
     }
 }

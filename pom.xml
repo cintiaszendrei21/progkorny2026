@@ -64,7 +64,7 @@
                 </configuration>
             </plugin>
 
-            <!-- Jacoco - Visszavéve 0.8.8-ra, ez a leguniverzálisabb -->
+
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
@@ -85,7 +85,7 @@
                 </executions>
             </plugin>
 
-            <!-- Checkstyle - Visszavéve 3.1.2-re -->
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
@@ -103,7 +103,7 @@
                     <configLocation>google_checks.xml</configLocation>
                     <encoding>UTF-8</encoding>
                     <consoleOutput>true</consoleOutput>
-                    <failsOnError>false</failsOnError> <!-- Első körben ne állítsa meg a buildet, ha hiba van -->
+                    <failsOnError>false</failsOnError>
                     <linkXRef>false</linkXRef>
                 </configuration>
             </plugin>
