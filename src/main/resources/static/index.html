@@ -47,61 +47,70 @@
 
 <script>
     function loadFlights() {
-     fetch('/api/flights')
-         .then(res => res.json())
-         .then(data => {
-             const tbody = document.querySelector('#flightsTable tbody');
-             tbody.innerHTML = '';
-             data.forEach(item => {
-                 tbody.innerHTML += `
-                     <tr>
-                         <td>${item.airline}</td>
-                         <td>${item.type}</td>
-                         <td>${item.flightNumber}</td>
-                         <td>${item.status}</td>
-                         <td>${item.gate}</td>
-                         <td>
-                             <button onclick="deleteFlight(${item.id})" style="background:#ff4d4d; color:white; border:none; padding:5px 10px; border-radius:4px; cursor:pointer;">Törlés</button>
-                         </td>
-                     </tr>`;
-             });
-         });
- }
+        fetch('/api/flights')
+            .then(res => res.json())
+            .then(data => {
+                const tbody = document.querySelector('#flightsTable tbody');
+                tbody.innerHTML = '';
+                data.forEach(item => {
+                    // Itt figyeltem arra, hogy a Java változóneveidet használjam (airline.name, Number)
+                    tbody.innerHTML += `
+                        <tr>
+                            <td>${item.airline ? item.airline.name : 'N/A'}</td>
+                            <td>${item.type}</td>
+                            <td>${item.number}</td>
+                            <td class="status-cell">${item.status}</td>
+                            <td>${item.gate}</td>
+                            <td>
+                                <button onclick="deleteFlight(${item.id})" style="background:#ff4d4d; color:white; border:none; padding:5px 10px; border-radius:4px; cursor:pointer;">Törlés</button>
+                            </td>
+                        </tr>`;
+                });
+            });
+    }
 
- function addFlight() {
-     const flightData = {
-         airline: document.getElementById('airlineName').value, // Most már csak szöveg
-         flightNumber: document.getElementById('flightNumber').value,
-         type: document.getElementById('type').value,
-         status: document.getElementById('status').value,
-         gate: document.getElementById('gate').value
-     };
+    function addFlight() {
+        // Itt javítottam az ID-kat, hogy passzoljanak a HTML-hez (Name, Number, type, stb.)
+        const flightData = {
+            airline: { name: document.getElementById('Name').value }, // Objektumként küldjük az airline-t
+            number: document.getElementById('Number').value,         // Kis 'n', mert a JSON-ben az lesz
+            type: document.getElementById('type').value,
+            status: document.getElementById('status').value,
+            gate: document.getElementById('gate').value
+        };
 
-     fetch('/api/flights', {
-         method: 'POST',
-         headers: { 'Content-Type': 'application/json' },
-         body: JSON.stringify(flightData)
-     })
-     .then(res => {
-         if (res.ok) {
-             loadFlights();
-             alert("Sikeresen mentve!");
-         } else {
-             alert("Hiba a mentésnél!");
-         }
-     });
- }
+        fetch('/api/flights', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(flightData)
+        })
+        .then(res => {
+            if (res.ok) {
+                // Töröljük a mezőket mentés után, hogy ne maradjanak ott
+                document.getElementById('Name').value = '';
+                document.getElementById('Number').value = '';
+                document.getElementById('type').value = '';
+                document.getElementById('status').value = '';
+                document.getElementById('gate').value = '';
 
- function deleteFlight(id) {
-     if(confirm("Biztosan törlöd?")) {
-         fetch('/api/flights/' + id, { method: 'DELETE' })
-             .then(res => {
-                 if(res.ok) loadFlights();
-             });
-     }
- }
+                loadFlights();
+                alert("Sikeresen mentve!");
+            } else {
+                alert("Hiba a mentésnél! Ellenőrizd a szervert.");
+            }
+        });
+    }
 
- loadFlights();
+    function deleteFlight(id) {
+        if(confirm("Biztosan törlöd?")) {
+            fetch('/api/flights/' + id, { method: 'DELETE' })
+                .then(res => {
+                    if(res.ok) loadFlights();
+                });
+        }
+    }
+
+    loadFlights();
 </script>
 </body>
 </html>
