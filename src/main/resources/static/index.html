@@ -75,9 +75,10 @@
 
         .form-row {
             display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
+            flex-wrap: nowrap;
+            gap: 10px;
             align-items: flex-end;
+            width: 100%;
         }
 
         .input-group {
@@ -98,13 +99,15 @@
 
         input {
             font-family: 'Times New Roman', Times, serif;
-            padding: 11px 14px;
+            padding: 11px 10px;
             border: 1px solid #cbd5e1;
             border-radius: 3px;
             font-size: 15px;
             color: #1a1a1a;
             background-color: #ffffff;
             transition: all 0.2s ease;
+            flex: 1;
+            min-width: 0;
         }
 
         input:focus {
@@ -116,7 +119,7 @@
 
         button[onclick="addFlight()"] {
             font-family: 'Times New Roman', Times, serif;
-            padding: 0 30px;
+            padding: 0 25px;
             background-color: #002855;
             color: #ffffff;
             border: none;
@@ -126,6 +129,7 @@
             font-size: 15px;
             transition: background-color 0.2s;
             height: 41px;
+            flex-shrink: 0;
         }
 
         button[onclick="addFlight()"]:hover {
@@ -192,13 +196,18 @@
 
 <div class="container">
     <h2>Új repülőjárat hozzáadása</h2>
-    <input type="text" id="Name" placeholder="Légitársaság">
-    <input type="text" id="type" placeholder="Típusa">
-    <input type="text" id="Number" placeholder="Járatszám">
-    <input type="text" id="status" placeholder="Státusz">
-    <input type="text" id="gate" placeholder="Kapu">
 
-    <button onclick="addFlight()">Mentés</button>
+    <div class="form-row" autocomplete="off">
+        <input type="text" id="name" placeholder="Légitársaság">
+        <input type="text" id="type" placeholder="Típusa">
+        <input type="text" id="number" placeholder="Járatszám">
+        <input type="text" id="tocity" placeholder="Honnan">
+        <input type="text" id="fromcity" placeholder="Hová">
+        <input type="text" id="status" placeholder="Státusz">
+        <input type="text" id="gate" placeholder="Kapu">
+
+        <button onclick="addFlight()">Mentés</button>
+    </div>
 </div>
 
 <div class="container">
@@ -209,6 +218,8 @@
             <th>Légitársaság</th>
             <th>Típus</th>
             <th>Járatszám</th>
+            <th>Honnan</th>
+            <th>Hová</th>
             <th>Státusz</th>
             <th>Kapu</th>
             <th>Művelet</th>
@@ -226,11 +237,14 @@
                 const tbody = document.querySelector('#flightsTable tbody');
                 tbody.innerHTML = '';
                 data.forEach(item => {
+                    /
                     tbody.innerHTML += `
                         <tr>
                             <td>${item.airline ? item.airline.name : 'N/A'}</td>
                             <td>${item.type}</td>
                             <td>${item.number}</td>
+                            <td>${item.tocity || ''}</td>
+                            <td>${item.fromcity || ''}</td>
                             <td class="status-cell">${item.status}</td>
                             <td>${item.gate}</td>
                             <td>
@@ -243,11 +257,11 @@
 
     function addFlight() {
         const flightData = {
-            airline: { name: document.getElementById('Name').value },
-            number: document.getElementById('Number').value,
+            airline: { name: document.getElementById('name').value },
+            number: document.getElementById('number').value,
             type: document.getElementById('type').value,
-            status: document.getElementById('status').value,
-            gate: document.getElementById('gate').value
+            fromcity: document.getElementById('fromcity').value,
+            tocity: document.getElementById('tocity').value,
         };
 
         fetch('/api/flights', {
@@ -257,9 +271,11 @@
         })
         .then(res => {
             if (res.ok) {
-                document.getElementById('Name').value = '';
-                document.getElementById('Number').value = '';
+                document.getElementById('name').value = '';
+                document.getElementById('number').value = '';
                 document.getElementById('type').value = '';
+                document.getElementById('fromcity').value = '';
+                document.getElementById('tocity').value = '';
                 document.getElementById('status').value = '';
                 document.getElementById('gate').value = '';
 
